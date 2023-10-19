@@ -20,36 +20,43 @@ Server: Nginx (proxy, load balancing)
 
 1 Create API with these endpoint 
 ```
-GET: getUserScoreList(limit: number = 10)
-POST updateAction(actionId: number)
-POST updateUserScore(userId: int, actionId: int)
+GET: getUserScoreList(limit: number = 10) : json
+POST updateAction(actionId: number) : bool
+PUT updateUserScore(userId: int, actionId: int)  : number
 ```
-2. getUserScoreList 
+2 Show top 10 user’s scores:
+```
+use getUserScoreList to get data and return Json data
 
-```
 data in cache ?
    yes: 
-     getDataFromCache()
+     getDataFromCache() :  Json(data)
    no:
-     getFromDB()
+     getFromDB() 
      saveDateToCache()
 ```
 
-2. updateUserScore
+3 updateUserScore
 ```
-checkUserAuthorized()
-checkUserIsCompleteAction(actionId: number, userId: number)
-updateUserScore(userId: number)
-clearCacheData()
+checkUserAuthorized()  : Boolean
+checkUserIsCompleteAction(actionId: number, userId: number) : Boolean
+updateUserScore(userId: number) : Boolean
+clearCacheData() : Boolean
 ```
 
-4. updateAction
+4 updateAction
 ```
-checkUserAuthorized()
-checkActionIsCompleted(actionId: number, actionData: Object)
-saveAction(actionData: object)
-updateUserScore(userId: number, actionId: number )
+checkUserAuthorized() : Boolean
+checkActionIsCompleted(actionId: number, actionData: Object) : Boolean
+saveAction(actionData: object) : Boolean
+updateUserScore(userId: number, actionId: number ) : number
 
+```
+
+5 We want live update of the score board.
+```
+Update userScore return current user score then save in local storage.
+Front end will use that score to update at frontend user's score
 ```
 
 ## Diagram
