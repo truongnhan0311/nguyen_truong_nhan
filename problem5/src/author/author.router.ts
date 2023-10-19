@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 
 import * as AuthorService from "./author.service"
+import { createAuthorValidationRule } from "../middleware/validator";
 
 export const authorRouter = express.Router();
 
@@ -36,9 +37,7 @@ authorRouter.get("/:id", async (request: Request, response: Response) => {
 // POST: Create a Author
 // Params: firstName, lastName
 authorRouter.post("/",
-    body("firstName").isString(),
-    body("lastName").isString(),
-    
+    createAuthorValidationRule(),
     async (request: Request, response: Response) => {
       const errors = validationResult(request);
       if (!errors.isEmpty()) {
@@ -53,3 +52,36 @@ authorRouter.post("/",
       }
     }
   );
+
+
+// PUT: Updating an Author
+authorRouter.put("/:id",
+    createAuthorValidationRule(), 
+    async (request: Request, response: Response) => {
+
+      const errors = validationResult(request);
+      if (!errors.isEmpty()) {
+        return response.status(400).json({ errors: errors.array() });
+      }
+      const id: number = parseInt(request.params.id, 10);
+      try {
+        const author = request.body;
+        const updatedAuthor = await AuthorService.updateAuthor(author, id);
+        return response.status(200).json(updatedAuthor);
+      } catch (error: any) {
+        return response.status(500).json(error.message);
+      }
+    }
+  );
+
+
+// DELETE: Delete an author based on the id
+authorRouter.delete("/:id", async (request: Request, response: Response) => {
+    const id: number = parseInt(request.params.id, 10);
+    try {
+        await AuthorService.deleteAuthor(id);
+        return response.status(204).json("Author has been successfully deleted");
+    } catch (error: any) {
+        return response.status(500).json(error.message);
+    }
+});
