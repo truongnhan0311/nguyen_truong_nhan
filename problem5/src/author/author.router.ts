@@ -85,3 +85,14 @@ authorRouter.delete("/:id", async (request: Request, response: Response) => {
         return response.status(500).json(error.message);
     }
 });
+
+
+// POST: Search Author
+authorRouter.post("/search", async (request: Request, response: Response) => {
+  try {
+    const authors = await AuthorService.searchAuthor(request.body);
+    return response.status(200).json(authors)
+  } catch (error: any) {
+      return response.status(500).json(error.message);
+  }
+});

@@ -1,7 +1,6 @@
 import { db } from "../utils/db.server";
 import { type } from "os";
 
-
 type Author = {
     id: number;
     firstName: string;
@@ -22,6 +21,33 @@ export const listAuthors = async(): Promise<Author[]> => {
         }
     );
 };
+
+
+export const searchAuthor = async(author: Omit<Author, "id">): Promise<Author[]> => {
+    const {firstName, lastName } = author;
+    console.log(firstName);
+    console.log(lastName);
+    
+    return db.author.findMany(
+        {
+            where: {
+                AND: [
+                    {firstName: {contains: firstName}},
+                    {lastName: {contains: lastName}}
+                ]
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                createdAt: true
+            },
+
+            take: 100
+        }
+    );
+}
+
 
 export const getAuthor = async(id: number): Promise<Author | null> => {
     return db.author.findUnique({
